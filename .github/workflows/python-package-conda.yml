@@ -11,7 +11,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    # Conda 설치 및 설정
+    # Conda 설치 및 초기화
     - name: Install Miniconda
       run: |
         curl -fsSL https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -o miniconda.sh
@@ -24,17 +24,19 @@ jobs:
     # Conda 환경 설정 및 의존성 설치
     - name: Install dependencies
       run: |
+        source $HOME/miniconda/etc/profile.d/conda.sh  # conda를 활성화시키기 위한 명령어
         conda env update --file environment.yml --name base
         conda activate base
 
     # flake8로 코드 스타일 체크
     - name: Lint with flake8
       run: |
+        source $HOME/miniconda/etc/profile.d/conda.sh  # conda 환경을 활성화
         conda install flake8 --solver classic
         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
-    # Set conda solver to classic (이 부분은 이전에 설정했으므로 이 위치에서 다시 설정할 필요는 없을 수도 있습니다)
+    # Set conda solver to classic
     - name: Set conda solver to classic
       run: |
         conda config --set solver classic
@@ -42,5 +44,6 @@ jobs:
     # pytest로 테스트 실행
     - name: Test with pytest
       run: |
+        source $HOME/miniconda/etc/profile.d/conda.sh  # conda 환경 활성화
         conda install pytest
-        pytest -v  # 테스트 파일들이 있는 디렉토리 명시 (필요시 추가)
+        pytest -v  # 필요에 따라 디렉토리 경로를 지정
