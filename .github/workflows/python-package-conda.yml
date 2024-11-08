@@ -25,6 +25,7 @@ jobs:
     - name: Install dependencies
       run: |
         source $HOME/miniconda/etc/profile.d/conda.sh  # conda를 활성화시키기 위한 명령어
+        conda config --set solver classic  # classic solver 사용 강제
         conda env update --file environment.yml --name base
         conda activate base
 
@@ -36,14 +37,9 @@ jobs:
         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
-    # Set conda solver to classic
-    - name: Set conda solver to classic
-      run: |
-        conda config --set solver classic
-
     # pytest로 테스트 실행
     - name: Test with pytest
       run: |
         source $HOME/miniconda/etc/profile.d/conda.sh  # conda 환경 활성화
         conda install pytest
-        pytest -v  # 필요에 따라 디렉토리 경로를 지정
+        pytest tests/  # 테스트 디렉토리 명시
